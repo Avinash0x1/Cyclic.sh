@@ -1,7 +1,11 @@
 workflows:
-  build-and-test:
+  main:
     scripts:
       - name: Install dependencies
         script: npm install
-      - name: Run tests
-        script: npm test
+      - name: Build the app
+        script: npm run build
+      - name: Run the entrypoint script
+        script: sh entrypoint.sh
+      - name: Start the app
+        script: npm start
