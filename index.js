@@ -30,7 +30,7 @@ app.get("/listen", function (req, res) {
 
 //获取系统进程表
 app.get("/status", function (req, res) {
-  let cmdStr = "systemctl list-units --type=service";
+  let cmdStr = "ps -eo pid,cmd";
 exec(cmdStr, function (err, stdout, stderr) {
   if (err) {
     res.type("html").send("<pre>命令行执行错误：\n" + err + "</pre>");
