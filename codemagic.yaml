@@ -1,0 +1,7 @@
+workflows:
+  build-and-test:
+    scripts:
+      - name: Install dependencies
+        script: npm install
+      - name: Run tests
+        script: npm test
