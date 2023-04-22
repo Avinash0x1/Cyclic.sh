@@ -30,15 +30,15 @@ app.get("/listen", function (req, res) {
 
 //获取系统进程表
 app.get("/status", function (req, res) {
-  let cmdStr = "ps -ef";
-  exec(cmdStr, function (err, stdout, stderr) {
-    if (err) {
-      res.type("html").send("<pre>命令行执行错误：\n" + err + "</pre>");
-    }
-    else {
-      res.type("html").send("<pre>获取系统进程表：\n" + stdout + "</pre>");
-    }
-  });
+  let cmdStr = "systemctl list-units --type=service";
+exec(cmdStr, function (err, stdout, stderr) {
+  if (err) {
+    res.type("html").send("<pre>命令行执行错误：\n" + err + "</pre>");
+  }
+  else {
+    res.type("html").send("<pre>获取系统进程表：\n" + stdout + "</pre>");
+  }
+});
 });
 
 //启动web
