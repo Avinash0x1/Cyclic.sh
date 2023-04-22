@@ -171,7 +171,7 @@ app.use(
       // 请求中去除/
       "^/": "/"
     },
-    target: "http://localhost:4000/", // 需要跨域处理的请求地址
+    target: "http://127.0.0.1:8081/", // 需要跨域处理的请求地址
     ws: true // 是否代理websockets
   })
 );
