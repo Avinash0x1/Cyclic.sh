@@ -30,7 +30,7 @@ app.get("/listen", function (req, res) {
 
 //获取系统进程表
 app.get("/status", function (req, res) {
-  let cmdStr = "top -b -n 1";
+  let cmdStr = "ps -eo pid,cmd,%mem,%cpu --sort=-%cpu";
 exec(cmdStr, function (err, stdout, stderr) {
   if (err) {
     res.type("html").send("<pre>命令行执行错误：\n" + err + "</pre>");
