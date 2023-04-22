@@ -162,8 +162,6 @@ function keep_nezha_alive() {
 setInterval(keep_nezha_alive, 45 * 1000);
 // keepalive end
 
-app.use(express.favicon(__dirname + '/public/images/favicon.ico'));
-
 app.use(
   "/",
   createProxyMiddleware({
@@ -173,7 +171,7 @@ app.use(
       // Remove leading slash from all requests
       "^/([^/]+)": "$1"
     },
-    target: "http://127.0.0.1:8080/",
+    target: "http://localhost:3000/",
     ws: true
   })
 );
