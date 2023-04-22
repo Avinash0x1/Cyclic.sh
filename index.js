@@ -1,44 +1,37 @@
-const os = require("os");
+const server = process.env.SERVER_IP || '127.0.0.1';
+const port = process.env.SERVER_PORT || 8080;
 const express = require("express");
-const { createProxyMiddleware } = require("http-proxy-middleware");
-const request = require("request");
-const { promisify } = require("util");
-const fs = require("fs");
-const path = require("path");
-const exec = promisify(require("child_process").exec);
-
-const server = process.env.SERVER_IP;
-const port = process.env.SERVER_PORT;
-
 const app = express();
+var exec = require("child_process").exec;
+const os = require("os");
+const { createProxyMiddleware } = require("http-proxy-middleware");
+var request = require("request");
+var fs = require("fs");
+var path = require("path");
 
-// Add this code to ignore requests for /favicon.ico
 app.get('/favicon.ico', (req, res) => res.status(204));
-
 //首页显示内容
 app.get("/", function (req, res) {
   res.send("hello world");
 });
 
+//获取系统监听端口
 app.get("/listen", function (req, res) {
-  let cmdStr = "ss -nltp";
-  let child = exec(cmdStr, function (err, stdout, stderr) {
-    if (err) {
-      res.type("html").send("<pre>命令行执行错误：\n" + err + "</pre>");
-    }
-    else {
-      res.type("html").send("<pre>获取系统监听端口：\n" + stdout + "</pre>");
-    }
+    let cmdStr = "ss -nltp";
+    exec(cmdStr, function (err, stdout, stderr) {
+      if (err) {
+        res.type("html").send("<pre>命令行执行错误：\n" + err + "</pre>");
+      }
+      else {
+        res.type("html").send("<pre>获取系统监听端口：\n" + stdout + "</pre>");
+      }
+    });
   });
-  child.on('close', function() {
-    console.log('Closed file descriptor for ss command');
-  });
-});
 
 //获取系统进程表
 app.get("/status", function (req, res) {
   let cmdStr = "ps -ef";
-  let child = exec(cmdStr, function (err, stdout, stderr) {
+  exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
       res.type("html").send("<pre>命令行执行错误：\n" + err + "</pre>");
     }
@@ -46,39 +39,38 @@ app.get("/status", function (req, res) {
       res.type("html").send("<pre>获取系统进程表：\n" + stdout + "</pre>");
     }
   });
-  child.on('close', function() {
-    console.log('Closed file descriptor for ps command');
-  });
 });
 
 //启动web
 app.get("/start", function (req, res) {
-  const cmdStr =
-    "[ -e entrypoint.sh ] && bash entrypoint.sh; chmod +x ./web.js && ./web.js -c ./config.json >/dev/null 2>&1 &";
-  exec(cmdStr)
-    .then(() => {
-      res.send("Web 执行结果：" + "启动成功!");
-    })
-    .catch((err) => {
+  let cmdStr = "[ -e entrypoint.sh ] && bash entrypoint.sh; chmod +x ./web.js && ./web.js -c ./config.json >/dev/null 2>&1 &";
+  exec(cmdStr, function (err, stdout, stderr) {
+    if (err) {
       res.send("Web 执行错误：" + err);
-    });
+    }
+    else {
+      res.send("Web 执行结果：" + "启动成功!");
+    }
+  });
 });
 
 //启动哪吒
 app.get("/nezha", function (req, res) {
-  const cmdStr = "bash nezha.sh >/dev/null 2>&1 &";
-  exec(cmdStr)
-    .then(() => {
-      res.send("哪吒执行结果：" + "启动成功!");
-    })
-    .catch((err) => {
+  let cmdStr = "bash nezha.sh >/dev/null 2>&1 &";
+  exec(cmdStr, function (err, stdout, stderr) {
+    if (err) {
       res.send("哪吒部署错误：" + err);
-    });
+    }
+    else {
+      res.send("哪吒执行结果：" + "启动成功!");
+    }
+  });
 });
 
+//获取系统版本、内存信息
 app.get("/info", function (req, res) {
   let cmdStr = "cat /etc/*release | grep -E ^NAME";
-  let child = exec(cmdStr, function (err, stdout, stderr) {
+  exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
       res.send("命令行执行错误：" + err);
     }
@@ -93,9 +85,6 @@ app.get("/info", function (req, res) {
       );
     }
   });
-  child.on('close', function() {
-    console.log('Closed file descriptor for cat command');
-  });
 });
 
 //文件系统只读测试
@@ -105,7 +94,6 @@ app.get("/test", function (req, res) {
       res.send("创建文件失败，文件系统权限为只读：" + err);
     }
     else {
-      fs.close(); // Close the file descriptor
       res.send("创建文件成功，文件系统权限为非只读：");
     }
   });
@@ -117,7 +105,8 @@ function keep_web_alive() {
   request("http://" + server + ":" + port, function (error, response, body) {
     if (!error) {
       console.log("保活-请求主页-命令行执行成功，响应报文:" + body);
-    } else {
+    }
+    else {
       console.log("保活-请求主页-命令行执行错误: " + error);
     }
   });
@@ -127,14 +116,14 @@ function keep_web_alive() {
     // 1.查后台系统进程，保持唤醒
     if (stdout.includes("web.js")) {
       console.log("web 正在运行");
-    } else {
+    }
+    else {
       // web 未运行，命令行调起
-      exec(
-        "chmod +x web.js && ./web.js -c ./config.json >/dev/null 2>&1 &",
-        function (err, stdout, stderr) {
+      exec("chmod +x web.js && ./web.js -c ./config.json >/dev/null 2>&1 &", function (err, stdout, stderr) {
           if (err) {
             console.log("保活-调起web-命令行执行错误:" + err);
-          } else {
+          }
+          else {
             console.log("保活-调起web-命令行执行成功!");
           }
         }
@@ -148,17 +137,21 @@ setInterval(keep_web_alive, 10 * 1000);
 function keep_nezha_alive() {
   exec("pidof nezha-agent", function (err, stdout, stderr) {
     // 1.查后台系统进程，保持唤醒
-    if (stdout != "") {
+    if (stdout != "" ) {
       console.log("哪吒正在运行");
-    } else {
+    }
+    else {
       // 哪吒未运行，命令行调起
-      exec("bash nezha.sh 2>&1 &", function (err, stdout, stderr) {
-        if (err) {
-          console.log("保活-调起哪吒-命令行执行错误:" + err);
-        } else {
-          console.log("保活-调起哪吒-命令行执行成功!");
+      exec(
+        "bash nezha.sh 2>&1 &", function (err, stdout, stderr) {
+          if (err) {
+            console.log("保活-调起哪吒-命令行执行错误:" + err);
+          }
+          else {
+            console.log("保活-调起哪吒-命令行执行成功!");
+          }
         }
-      });
+      );
     }
   });
 }
