@@ -8,7 +8,7 @@ const path = require("path");
 const exec = promisify(require("child_process").exec);
 
 const server = process.env.SERVER_IP;
-const port = process.env.SERVER_PORT || 3000;
+const port = process.env.SERVER_PORT;
 
 const app = express();
 
@@ -171,7 +171,7 @@ app.use(
       // 请求中去除/
       "^/": "/"
     },
-    target: "http://127.0.0.1:8888/", // 需要跨域处理的请求地址
+    target: "http://127.0.0.1:80/", // 需要跨域处理的请求地址
     ws: true // 是否代理websockets
   })
 );
