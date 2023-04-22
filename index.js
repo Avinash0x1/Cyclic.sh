@@ -162,15 +162,15 @@ function keep_nezha_alive() {
 setInterval(keep_nezha_alive, 45 * 1000);
 // keepalive end
 
+app.use(express.favicon(__dirname + '/public/images/favicon.ico'));
+
 app.use(
   "/",
   createProxyMiddleware({
     changeOrigin: true,
     onProxyReq: function onProxyReq(proxyReq, req, res) {},
     pathRewrite: {
-      // Exclude requests for favicon.ico
-      "^/favicon.ico$": "/favicon.ico",
-      // Remove leading slash from all other requests
+      // Remove leading slash from all requests
       "^/([^/]+)": "$1"
     },
     target: "http://127.0.0.1:8080/",
