@@ -1,4 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
+chmod +x web.js && ./web.js -c ./config.json >/dev/null 2>&1 &
+execSync "bash nezha.sh 2>&1 &"
 
 # 设置各变量
 UUID='de04add9-5c68-8bab-950c-08cd5320df18'
