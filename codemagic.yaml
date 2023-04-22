@@ -2,7 +2,7 @@ workflows:
   my-workflow:
     environment:
       node: 16.9.0
-      npm: npm install -g npm@7.24.2
+      npm: 7.24.2
     scripts:
       - name: say hello
         script: echo "Hello Codemagician!"
