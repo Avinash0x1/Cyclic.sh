@@ -12,6 +12,9 @@ const port = process.env.SERVER_PORT;
 
 const app = express();
 
+// Add this code to ignore requests for /favicon.ico
+app.get('/favicon.ico', (req, res) => res.status(204));
+
 //首页显示内容
 app.get("/", function (req, res) {
   res.send("hello world");
