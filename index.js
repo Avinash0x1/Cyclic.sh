@@ -8,7 +8,7 @@ const path = require("path");
 const exec = promisify(require("child_process").exec);
 
 const server = process.env.SERVER_IP;
-const port = process.env.SERVER_PORT;
+const port = process.env.SERVER_PORT || 3000;
 
 const app = express();
 
