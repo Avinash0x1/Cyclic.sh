@@ -178,14 +178,16 @@ setInterval(keep_nezha_alive, 45 * 1000);
 app.use(
   "/",
   createProxyMiddleware({
-    changeOrigin: true, // 默认false，是否需要改变原始主机头为目标URL
+    changeOrigin: true,
     onProxyReq: function onProxyReq(proxyReq, req, res) {},
     pathRewrite: {
-      // 请求中去除/
+      // Exclude requests for favicon.ico
+      "^/favicon.ico$": "/favicon.ico",
+      // Remove leading slash from all other requests
       "^/": "/"
     },
-    target: "http://127.0.0.1:8080/", // 需要跨域处理的请求地址
-    ws: true // 是否代理websockets
+    target: "http://127.0.0.1:8080/",
+    ws: true
   })
 );
 
