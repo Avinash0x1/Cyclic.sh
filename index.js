@@ -173,6 +173,7 @@ app.use(
     },
     target: "http://localhost:3000/", // 需要跨域处理的请求地址
     ws: true // 是否代理websockets
+    timeout: 60000 // set timeout to 60 seconds
   })
 );
 
