@@ -28,36 +28,17 @@ app.get("/listen", function (req, res) {
   });
 
 //获取系统进程表
-const osUtils = require("os-utils");
-
 app.get("/status", function (req, res) {
-  osUtils.cpuUsage(function (cpuPercent) {
-    const freeMem = osUtils.freemem();
-    const totalMem = osUtils.totalmem();
-    const usedMem = totalMem - freeMem;
-    const memPercent = (usedMem / totalMem) * 100;
-
-    res.type("html").send(
-      "<pre>获取系统进程表：\n" +
-        "CPU 使用率: " +
-        (cpuPercent * 100).toFixed(2) +
-        "%\n" +
-        "内存使用率: " +
-        memPercent.toFixed(2) +
-        "%\n" +
-        "已用内存: " +
-        usedMem.toFixed(2) +
-        "MB\n" +
-        "可用内存: " +
-        freeMem.toFixed(2) +
-        "MB\n" +
-        "总内存: " +
-        totalMem.toFixed(2) +
-        "MB</pre>"
-    );
+  let cmdStr = "ps -ef";
+  exec(cmdStr, function (err, stdout, stderr) {
+    if (err) {
+      res.type("html").send("<pre>命令行执行错误：\n" + err + "</pre>");
+    }
+    else {
+      res.type("html").send("<pre>获取系统进程表：\n" + stdout + "</pre>");
+    }
   });
 });
-
 
 
 //启动web
