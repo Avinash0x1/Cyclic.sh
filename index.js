@@ -9,7 +9,6 @@ var request = require("request");
 var fs = require("fs");
 var path = require("path");
 
-app.get('/favicon.ico', (req, res) => res.status(204));
 //首页显示内容
 app.get("/", function (req, res) {
   res.send("hello world");
